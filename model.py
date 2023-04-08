@@ -1,12 +1,11 @@
-import collections
 import math
-import os.path
 from abc import ABC
+from typing import Union, Optional, Tuple
+
 import torch
 from torch import nn
 from torch.nn import functional as F
 from transformers import PreTrainedModel, PretrainedConfig
-from typing import Union, Optional, Tuple
 from transformers.modeling_outputs import BaseModelOutputWithPastAndCrossAttentions, CausalLMOutputWithCrossAttentions
 
 
@@ -67,44 +66,6 @@ class GPT3Config(PretrainedConfig):
             apply_residual_connection_post_layer_norm
         self.hidden_dropout = hidden_dropout
         self.initializer_range = initializer_range
-
-
-def convert_damo_to_ours(model_path, save_path):
-    from transformers import BertTokenizer
-
-    filename = os.path.join(model_path, "pytorch_model.bin")
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-
-    config = GPT3Config.from_pretrained(model_path)
-    tokenizer = BertTokenizer.from_pretrained(model_path)
-    mappings = {
-        "language_model.word_embeddings.weight": "transformer.word_embeddings.weight",
-        "language_model.position_embeddings.weight": "transformer.position_embeddings.weight",
-    }
-    state_dict = torch.load(filename, map_location='cpu')
-    new_state_dict = collections.OrderedDict()
-
-    for k, v in state_dict.items():
-
-        if k.startswith("model."):
-            k = k[6:]
-        if k in mappings:
-            new_k = mappings[k]
-        elif "language_model.transformer.layers." in k:
-            new_k = k.replace("language_model.transformer.layers.", "transformer.h.")
-        elif "language_model.transformer.final_layernorm" in k:
-            new_k = k.replace("language_model.transformer.final_layernorm", "transformer.final_layernorm")
-        else:
-            new_k = None
-            # print(k)
-        if new_k is not None:
-            new_state_dict[new_k] = v
-    new_state_dict["lm_head.weight"] = new_state_dict["transformer.word_embeddings.weight"]
-
-    config.save_pretrained(save_path)
-    tokenizer.save_pretrained(save_path)
-    torch.save(new_state_dict, os.path.join(save_path, "pytorch_model.bin"))
 
 
 def _make_causal_mask(
