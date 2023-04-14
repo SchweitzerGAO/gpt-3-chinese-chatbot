@@ -115,7 +115,7 @@ def valid_epoch(epoch_idx):
 
 def train():
     training_steps = len(train_loader) // config.grad_accumulation_step * config.epoch
-    optimizer = transformers.AdamW(net.parameters(), lr=config.lr, eps=config.weight_decay)
+    optimizer = torch.optim.AdamW(net.parameters(), lr=config.lr, eps=config.weight_decay)
     scheduler = transformers.get_cosine_schedule_with_warmup(optimizer,
                                                              num_warmup_steps=config.warm_up_steps,
                                                              num_training_steps=training_steps)
