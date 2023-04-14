@@ -1,4 +1,4 @@
-torch
 transformers
 matplotlib
 tqdm
+peft

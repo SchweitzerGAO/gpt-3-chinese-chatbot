@@ -140,4 +140,4 @@ def train():
 
 
 if __name__ == '__main__':
-    net.print_trainable_parameters()
+    train()
