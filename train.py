@@ -11,12 +11,15 @@ from peft import get_peft_model, LoraConfig, TaskType
 torch.manual_seed(2023)
 
 peft_config = LoraConfig(
+    task_type=TaskType.CAUSAL_LM,
     inference_mode=False, r=16, lora_alpha=32, lora_dropout=0.1,
     target_modules='lm_head'
 )
 
 net = GPT3ForCausalLM.from_pretrained("HuiHuang/gpt3-damo-base-zh")
 net = get_peft_model(net, peft_config)
+
+net.to(config.device)
 
 train_loader, valid_loader = load_dataset('./pkl_data/train.pkl', './pkl_data/valid.pkl')
 
@@ -117,10 +120,7 @@ def train():
                                                              num_warmup_steps=config.warm_up_steps,
                                                              num_training_steps=training_steps)
     best_valid_acc = 0
-    num_params = 0
-    for param in net.parameters():
-        num_params += param.numel()
-    print(f'Number of parameters: {num_params}')
+    net.print_trainable_parameters()
     for ep in range(config.epoch):
         train_loss = train_epoch(optimizer, scheduler, ep)  # train
         val_loss, val_acc = valid_epoch(ep)  # validation
