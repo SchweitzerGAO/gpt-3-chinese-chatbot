@@ -10,7 +10,7 @@ import torch
 import config
 import torch.nn.utils.rnn as rnn_utils
 
-tokenizer = BertTokenizerFast.from_pretrained("HuiHuang/gpt3-damo-large-zh")
+tokenizer = BertTokenizerFast.from_pretrained("HuiHuang/gpt3-damo-base-zh")
 
 
 def json_to_txt(rpath, wpath):
@@ -34,7 +34,7 @@ def preprocess_lccc(rpath, wpath):
         data = f.read()
     data = data.split('\n\n')
     proceeded_dialogs = []
-    for i, dialog in enumerate(tqdm(data[0:int(1.5e6)])):
+    for i, dialog in enumerate(tqdm(data[0:int(2**20)])):
         sentences = dialog.split('\n')
         input_ids = [cls_id]
         for s in sentences:

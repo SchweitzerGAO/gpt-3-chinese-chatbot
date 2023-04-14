@@ -98,7 +98,7 @@ def _prepare_attn_mask(
 
     if src_length > 1:
         combined_attention_mask = _make_causal_mask(
-            input_shape, device=device, past_key_values_length=0
+            torch.Size(input_shape), device=device, past_key_values_length=0
         )
 
     # [batch_size, seq_length] -> [batch_size, 1, tgt_length, src_length]

@@ -1,5 +1,4 @@
 from model import GPT3ForCausalLM
-from transformers import BertTokenizerFast
 
 import torch
 import transformers
@@ -11,7 +10,6 @@ import os
 torch.manual_seed(2023)
 
 net = GPT3ForCausalLM.from_pretrained("HuiHuang/gpt3-damo-base-zh")
-tokenizer = BertTokenizerFast.from_pretrained("HuiHuang/gpt3-damo-base-zh")
 
 train_loader, valid_loader = load_dataset('./pkl_data/train.pkl', './pkl_data/valid.pkl')
 
