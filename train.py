@@ -1,3 +1,5 @@
+import logging
+
 from model import GPT3ForCausalLM
 
 import torch
@@ -9,6 +11,30 @@ import os
 from peft import get_peft_model, LoraConfig, TaskType
 
 torch.manual_seed(2023)
+
+
+def create_logger(log_path='./train.log'):
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    formatter = logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s')
+
+    # 创建一个handler，用于写入日志文件
+    file_handler = logging.FileHandler(
+        filename=log_path)
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.INFO)
+    logger.addHandler(file_handler)
+
+    # 创建一个handler，用于将日志输出到控制台
+    console = logging.StreamHandler()
+    console.setLevel(logging.DEBUG)
+    console.setFormatter(formatter)
+    logger.addHandler(console)
+
+    return logger
+
 
 peft_config = LoraConfig(
     task_type=TaskType.CAUSAL_LM,
@@ -24,6 +50,8 @@ net.to(config.device)
 train_loader, valid_loader = load_dataset('./pkl_data/train.pkl', './pkl_data/valid.pkl')
 
 train_losses, valid_losses, valid_accuracies = [], [], []
+
+logger = create_logger()
 
 
 def plot(figure_id, to_plot, title, file_name):
@@ -44,7 +72,7 @@ def accuracy(y, y_hat, ign_idx):
 
 
 def train_epoch(optimizer, scheduler, epoch_idx):
-    print(f'Start training epoch {epoch_idx + 1}')
+    logger.info(f'Start training epoch {epoch_idx + 1}')
     net.train()
     device = config.device
     ign_idx = config.ignore_idx
@@ -75,16 +103,17 @@ def train_epoch(optimizer, scheduler, epoch_idx):
             optimizer.step()
             scheduler.step()
             optimizer.zero_grad()
-        print(f'Epoch: {epoch_idx + 1}, batch: {i + 1}, loss: {config.grad_accumulation_step * loss.item()}, '
-              f'batch_acc: {batch_acc * 100}%, lr: {scheduler.get_lr()}')
+        logger.info(f'Epoch: {epoch_idx + 1}, batch: {i + 1}, loss: {config.grad_accumulation_step * loss.item()}, '
+                    f'batch_acc: {batch_acc * 100}%, lr: {scheduler.get_lr()}')
     epoch_mean_loss = total_loss / len(train_loader)
     epoch_mean_acc = all_correct / all_word
-    print(f'Training epoch: {epoch_idx + 1} loss: {epoch_mean_loss}, acc: {epoch_mean_acc * 100}%\n')
+    logger.info(f'Training epoch: {epoch_idx + 1} loss: {epoch_mean_loss}, acc: {epoch_mean_acc * 100}%\n')
     return epoch_mean_loss
 
 
 def valid_epoch(epoch_idx):
     print(f'Start validating epoch {epoch_idx + 1}')
+    logger.info(f'Start validating epoch {epoch_idx + 1}')
     net.eval()
     device = config.device
     ign_idx = config.ignore_idx
@@ -109,7 +138,7 @@ def valid_epoch(epoch_idx):
             all_word += batch_word
         epoch_mean_loss = total_loss / len(valid_loader)
         epoch_mean_acc = all_correct / all_word
-    print(f'Validating epoch: {epoch_idx}, loss: {epoch_mean_loss}, acc: {epoch_mean_acc}\n')
+    logger.info(f'Validating epoch: {epoch_idx}, loss: {epoch_mean_loss}, acc: {epoch_mean_acc}\n')
     return epoch_mean_loss, epoch_mean_acc
 
 
