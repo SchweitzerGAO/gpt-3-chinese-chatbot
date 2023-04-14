@@ -6,10 +6,17 @@ import config
 from preprocess import load_dataset
 from matplotlib import pyplot as plt
 import os
+from peft import get_peft_model, LoraConfig, TaskType
 
 torch.manual_seed(2023)
 
+peft_config = LoraConfig(
+    inference_mode=False, r=16, lora_alpha=32, lora_dropout=0.1,
+    target_modules='lm_head'
+)
+
 net = GPT3ForCausalLM.from_pretrained("HuiHuang/gpt3-damo-base-zh")
+net = get_peft_model(net, peft_config)
 
 train_loader, valid_loader = load_dataset('./pkl_data/train.pkl', './pkl_data/valid.pkl')
 
@@ -133,4 +140,4 @@ def train():
 
 
 if __name__ == '__main__':
-    train()
+    net.print_trainable_parameters()

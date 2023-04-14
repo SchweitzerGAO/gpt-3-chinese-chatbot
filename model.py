@@ -1,6 +1,6 @@
 import math
 from abc import ABC
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, Any
 
 import torch
 from torch import nn
@@ -341,7 +341,7 @@ class GPT3Model(GPT3PreTrainedModel):
             output_hidden_states: Optional[bool] = None,
             return_dict: Optional[bool] = None,
             **deprecated_arguments
-    ) -> Union[Tuple[torch.Tensor, ...], BaseModelOutputWithPastAndCrossAttentions]:
+    ) -> Union[tuple[Union[tuple[Any, ...], tuple], ...], BaseModelOutputWithPastAndCrossAttentions]:
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states

@@ -34,7 +34,7 @@ def preprocess_lccc(rpath, wpath):
         data = f.read()
     data = data.split('\n\n')
     proceeded_dialogs = []
-    for i, dialog in enumerate(tqdm(data[0:int(2**20)])):
+    for i, dialog in enumerate(tqdm(data[0:int(2**21)])):
         sentences = dialog.split('\n')
         input_ids = [cls_id]
         for s in sentences:
