@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 import os
 from peft import get_peft_model, LoraConfig, TaskType
 
-torch.manual_seed(2023)
+torch.manual_seed(3407)
 
 
 def create_logger(log_path='./train.log'):
