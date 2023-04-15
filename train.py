@@ -120,7 +120,7 @@ def valid_epoch(epoch_idx):
     total_loss = 0
     all_correct, all_word = 0, 0
     with torch.no_grad():
-        for i, (input_ids, y) in enumerate(train_loader):
+        for i, (input_ids, y) in enumerate(valid_loader):
             # predict
             input_ids = input_ids.to(device)
             y = y.to(device)
