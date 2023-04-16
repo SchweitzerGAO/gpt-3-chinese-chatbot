@@ -8,7 +8,7 @@ import config
 from preprocess import load_dataset
 from matplotlib import pyplot as plt
 import os
-from peft import get_peft_model, LoraConfig, TaskType
+from peft import get_peft_model, LoraConfig, TaskType, PeftModel
 
 torch.manual_seed(3407)
 
@@ -43,7 +43,7 @@ peft_config = LoraConfig(
 )
 
 net = GPT3ForCausalLM.from_pretrained("HuiHuang/gpt3-damo-base-zh")
-net = get_peft_model(net, peft_config)
+net = PeftModel.from_pretrained(net, './saved_models/best_4')
 
 net.to(config.device)
 
