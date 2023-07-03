@@ -8,6 +8,6 @@ A [GPT-3](https://github.com/huanghuidmml/gpt3_zh) based Chinese chatbot finetun
 
 I fine-tuned the last `nn.Linear` layer with [PEFT](https://github.com/huggingface/peft) = Huggingface+LoRA and the preprocessing method in [this repo](https://github.com/yangjianxin1/GPT2-chitchat/) 
 
-### 2. Prompt Fine-tuning
+### 2. Instruction Fine-tuning
 
 To be done
